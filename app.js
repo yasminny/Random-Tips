@@ -16,8 +16,9 @@ function initView() {
       <input placeholder="Add here" required>
       <button class="add-tip-btn">Submit</button>
     </form>`);
+
   main.innerHTML = baseMainTemplate;
-  main.getElementById('tip-form').addEventListener('submit', handelNewTip);
+  main.querySelector('#tip-form').addEventListener('submit', handelNewTip);
   main.querySelector('.hello').addEventListener('click', showTips);
 }
 
@@ -47,15 +48,12 @@ function showTips() {
 
   main.innerHTML += tipTemplate;
 
-  const tipTextElement = main.getElementById('tip-text');
-  const closeBtn = main.getElementById('close');
-  const nextBtn = main.getElementById('next');
-  const noMoreTipsBtn = main.getElementById('no-more');
+  const tipTextElement = main.querySelector('#tip-text');
 
+  main.querySelector('#close').addEventListener('click', initView);
+  main.querySelector('#next').addEventListener('click', nextTipDisplay);
+  main.querySelector('#no-more').addEventListener('click', noMoreTipDisplay);
   tipTextElement.setAttribute('tip-index', tipIndex);
-  closeBtn.addEventListener('click', initView);
-  nextBtn.addEventListener('click', nextTipDisplay);
-  noMoreTipsBtn.addEventListener('click', noMoreTipDisplay);
   tipTextElement.innerText = selectedTip;
 }
 
@@ -65,7 +63,7 @@ function noMoreTipDisplay() {
 }
 
 function nextTipDisplay() {
-  const tipTextElement = main.getElementById('tip-text');
+  const tipTextElement = main.querySelector('#tip-text');
   const oldTipIndex = parseInt(tipTextElement.getAttribute('tip-index'));
   const nextTip = (oldTipIndex + 1) % tipArray.length;
   tipTextElement.setAttribute('tip-index', nextTip);
@@ -101,9 +99,9 @@ function setXhrInfoDisplay() {
         <h2></h2>
       </div>
     </section>`;
+
   main.innerHTML += infoTemplate;
-  const closeBtn = main.getElementById('close');
-  closeBtn.addEventListener('click', initView);
+  main.querySelector('#close').addEventListener('click', initView);
 }
 
 function xhrErrorHandler() {
@@ -121,7 +119,7 @@ function xhrTimeoutHandler() {
 function xhrLoadHandler(e) {
   const myXhr = e.target;
 
-  tipArray = tipArray !== undefined ? tipArray.push(JSON.parse(myXhr.response)) : JSON.parse(myXhr.response);
+  tipArray = JSON.parse(myXhr.response);
   localStorage.setItem('tipArray', JSON.stringify(tipArray));
   initTips();
 }
