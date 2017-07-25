@@ -6,19 +6,18 @@ const main = document.querySelector('main');
  */
 
 function initView() {
-  const baseMainTemplate = `<h1>Hello World</h1>
-<div class="img-bcg">
-<div class="hello">
-</div>
-</div>
+  const baseMainTemplate = (`<h1>Hello World</h1>
+    <div class="img-bcg">
+      <div class="hello">
+      </div>
+    </div>
     <p>Add tips:</p>
     <form id="tip-form">
       <input placeholder="Add here" required>
       <button class="add-tip-btn">Submit</button>
-    </form>`;
+    </form>`);
   main.innerHTML = baseMainTemplate;
-  const formElem = document.getElementById('tip-form');
-  formElem.addEventListener('submit', handelNewTip);
+  main.getElementById('tip-form').addEventListener('submit', handelNewTip);
   main.querySelector('.hello').addEventListener('click', showTips);
 }
 
@@ -27,15 +26,12 @@ function initTips() {
   const chances = Math.round(Math.random() * 100);
 
   if (displayTip && chances % 2 === 0) {
-    console.log('init tips');
     showTips();
   }
 }
 
 function showTips() {
-  console.log('show tips func');
-
-  const tipTemplate = `<section>
+  const tipTemplate = (`<section>
       <div class="tip-box">
         <button type="button" id="close">X close</button>
         <h2>Tip Of The Day</h2>
@@ -45,15 +41,16 @@ function showTips() {
           <button type="button" id="no-more">Don't Show Again</button>
         </div>
       </div>
-    </section>`;
+    </section>`);
   const selectedTip = tipArray[Math.floor(Math.random() * tipArray.length)];
   const tipIndex = tipArray.findIndex((item) => item === selectedTip);
+
   main.innerHTML += tipTemplate;
 
-  const tipTextElement = document.getElementById('tip-text');
-  const closeBtn = document.getElementById('close');
-  const nextBtn = document.getElementById('next');
-  const noMoreTipsBtn = document.getElementById('no-more');
+  const tipTextElement = main.getElementById('tip-text');
+  const closeBtn = main.getElementById('close');
+  const nextBtn = main.getElementById('next');
+  const noMoreTipsBtn = main.getElementById('no-more');
 
   tipTextElement.setAttribute('tip-index', tipIndex);
   closeBtn.addEventListener('click', initView);
@@ -68,7 +65,7 @@ function noMoreTipDisplay() {
 }
 
 function nextTipDisplay() {
-  const tipTextElement = document.getElementById('tip-text');
+  const tipTextElement = main.getElementById('tip-text');
   const oldTipIndex = parseInt(tipTextElement.getAttribute('tip-index'));
   const nextTip = (oldTipIndex + 1) % tipArray.length;
   tipTextElement.setAttribute('tip-index', nextTip);
@@ -82,18 +79,19 @@ initView();
  */
 
 function getTipsData() {
-  if(localStorage.getItem('tipArray')){
+  if (localStorage.getItem('tipArray')) {
     tipArray = JSON.parse(localStorage.getItem('tipArray'));
-   return initTips();
+    return initTips();
   }
-  const xhr = new XMLHttpRequest();
-  xhr.addEventListener('load', xhrLoadHandler);
-  xhr.addEventListener('error', xhrErrorHandler);
-  xhr.addEventListener('timeout', xhrTimeoutHandler);
+  else {
+    const xhr = new XMLHttpRequest();
+    xhr.addEventListener('load', xhrLoadHandler);
+    xhr.addEventListener('error', xhrErrorHandler);
+    xhr.addEventListener('timeout', xhrTimeoutHandler);
 
-
-  xhr.open('GET', 'tips.json');
-  xhr.send();
+    xhr.open('GET', 'tips.json');
+    xhr.send();
+  }
 }
 
 function setXhrInfoDisplay() {
@@ -104,26 +102,26 @@ function setXhrInfoDisplay() {
       </div>
     </section>`;
   main.innerHTML += infoTemplate;
-  const closeBtn = document.getElementById('close');
+  const closeBtn = main.getElementById('close');
   closeBtn.addEventListener('click', initView);
 }
 
 function xhrErrorHandler() {
   setXhrInfoDisplay();
-  const infoMsgElem = document.querySelector('.tip-box').querySelector('h2');
+  const infoMsgElem = main.querySelector('.tip-box').querySelector('h2');
   infoMsgElem.innerText = "Sadly, the tip of the day could not load";
 }
 
 function xhrTimeoutHandler() {
   setXhrInfoDisplay();
-  const infoMsgElem = document.querySelector('.tip-box').querySelector('h2');
+  const infoMsgElem = main.querySelector('.tip-box').querySelector('h2');
   infoMsgElem.innerText = "The server request to get the tips of the day was timed out";
 }
 
 function xhrLoadHandler(e) {
   const myXhr = e.target;
 
-  tipArray = tipArray !== undefined? tipArray.push(JSON.parse(myXhr.response)) : JSON.parse(myXhr.response);
+  tipArray = tipArray !== undefined ? tipArray.push(JSON.parse(myXhr.response)) : JSON.parse(myXhr.response);
   localStorage.setItem('tipArray', JSON.stringify(tipArray));
   initTips();
 }
